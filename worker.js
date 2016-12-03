@@ -26,7 +26,7 @@ function inStream(data){
 		var size = data[5];
 		size |= data[6] << 8;
 		size |= data[7] << 16;
-		size |= data[8] << 24;
+		size += data[8]*0x1000000;
 		return size;
 	}
 }
