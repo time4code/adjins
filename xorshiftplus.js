@@ -31,6 +31,5 @@ XORShiftPlus.prototype.rand = function(a,b){
 	this.seed3 = x0 ^ y1 ^ (x1 >> 17) ^ (y1 >> 26);
 	x0 = this.seed2 + y0;
 	x1 = this.seed3 + y1 + (x0 > 0xFFFFFFFF?1:0);
-	x0 &= 0xFFFFFFFF;
 	return (((x0&0xFFFFFFFF)+((x1&0x1FFFFF)*0x100000000))%b)+a;
 }
