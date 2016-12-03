@@ -1,0 +1,210 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8"/>
+	<style>
+		body{
+			padding: 0px;
+			margin: 0px;
+			background-color: lightgray;
+		}
+		hr{
+			margin: 8px 0px;
+		}
+		.banner{
+			background-color: white;
+			font-size: 18px;
+			font-family: Monospace;
+			font-weight: bold;
+			line-height: 40px;
+			text-align: center;
+			width: 80%;
+			margin: 0px auto;
+			height: 40px;
+		}
+		.textbox{
+			width: 80%;
+			margin: 0px auto;
+			height: calc(70vh - 40px);
+		}
+		.label{
+			height: 30px;
+			line-height: 30px;
+			padding: 0px;
+			margin: 0px;
+			padding-left: 10px;
+			background-color: lightgray;
+			font-size: 16px;
+			font-family: Monospace;
+			font-weight: bold;
+		}
+		.textbox textarea{
+			box-sizing: border-box;
+			width: 100%;
+			height: calc(100% - 30px);
+			padding: 2px;
+		}
+		.codebox{
+			width: 80%;
+			margin: 0px auto;
+			height: calc(70vh - 18px);
+		}
+		.codebox code{
+			box-sizing: border-box;
+			width: 100%;
+			height: calc(100% - 40px);
+			background-color: white;
+			display: block;
+			border: 1px solid #A9A9A9;
+			margin-bottom: 10px;
+			white-space: pre-wrap;
+			padding: 2px;
+			overflow-y: auto;
+		}
+		.adjbox{
+			width: 80%;
+			margin: 0px auto;
+			height: 30vh;
+		}
+		.adjbox textarea{
+			box-sizing: border-box;
+			width: 100%;
+			height: calc(100% - 80px);
+			padding: 2px;
+		}
+		.adjbox button{
+			display: block;
+			box-sizing: border-box;
+			height: 30px;
+			margin: 5px 0px;
+			width: 100%;
+			background-color: white;
+			font-size: 16px;
+			font-family: Monospace;
+			font-weight: bold;
+		}
+		#loader{
+			position: absolute;
+			top: 0px;
+			left: 0px;
+			display: flex;
+			height: 100%;
+			width: 100%;
+			justify-content: center;
+			align-items: center;
+		}
+		#loader div{
+			font-family: Monospace;
+		}
+		#content{
+			display: none;
+		}
+		#lpercent{
+			text-align: center;
+			font-size: 20px;
+			margin-bottom: 2px;
+		}
+		#lstep{
+			text-align: center;
+			margin-top: 0px;
+		}
+		.adj{
+			color: red;
+		}
+		.noun{
+			color: blue;
+		}
+		.inserted{
+			background-color: linen;
+		}
+	</style>
+	<script src="cash.min.js"></script>
+</head>
+<body>
+<script>
+$(function(){
+	var worker = new Worker("worker.js");
+	$('#linfo').html("downloading compresed dictionary file (?MB)");
+	$('#lstep').html("initialization step 1/2");
+	worker.onmessage = function(e){
+		switch(e.data[0]){
+			case 'ajax-progress':
+				$('#lpercent').html(Math.floor(100*e.data[1]/e.data[2])+"%");
+				$('#linfo').html("downloading compresed dictionary file ("+(e.data[2]/1024/1024).toFixed(2)+"MB)");
+				break;
+			case 'ajax-complete':
+				$('#lstep').html("initialization step 2/2");
+				$('#linfo').html("uncompressing dictionary file");
+				$('#lpercent').html("0%");
+				worker.postMessage(['lzma-start']);
+				break;
+			case 'ajax-error':
+				$('#lpercent').html("ERROR");
+				$('#linfo').html("an error occured during file transfer");
+				break;
+			case 'lzma-progress':
+			case 'mklist-progress':
+			case 'parse-progress':
+				$('#lpercent').html(Math.floor(100*e.data[1]/e.data[2])+"%");
+				break;
+			case 'lzma-complete':
+				$('#loader').css('display','none');
+				$('#content').css('display','block');
+				break;
+			case 'lzma-error':
+				$('#lpercent').html("ERROR");
+				$('#linfo').html("an error occured during decompresion<br/>"+e.data[1]);
+				break;;
+			case 'mklist-complete':
+				if(e.data[1].length > 0){
+					$('#loader').css('display','none');
+					$('#content').css('display','block');
+					$('#output').html('<span class="error">Unrecognized adjectives in input list:</span> '+e.data[1].join(' '));
+					window.scrollTo(0,document.body.scrollHeight);
+				}else{
+					$('#lstep').html("input parse step 2/2");
+					$('#linfo').html("running main algorithm");
+					$('#lpercent').html("0%");
+					worker.postMessage(['parse-start',$('#input').val()]);
+				}
+				break;
+			case 'parse-complete':
+				$('#loader').css('display','none');
+				$('#content').css('display','block');
+				$('#output').html(e.data[1]);
+				window.scrollTo(0,document.body.scrollHeight);
+				break;
+		}
+	}
+	worker.postMessage(['ajax-start']);
+	$('#btn').on('click',function(){
+		$('#loader').css('display','flex');
+		$('#content').css('display','none');
+		$('#lstep').html("input parse step 1/2");
+		$('#linfo').html("processing adjective list");
+		$('#lpercent').html("0%");
+		worker.postMessage(['mklist-start',$('#adjset').val()]);
+	});
+});
+</script>
+<div id="loader">
+<div>
+<p id="lpercent">0%</p>
+<p id="lstep">? step ?/?</p>
+<hr/>
+<p id="linfo">u're JS engine is dead</p>
+</div>
+</div>
+<div id="content">
+<div class="banner">Adjective Text Inserter</div>
+<div class="textbox"><p class="label">Input text:</p><textarea id="input">
+Według Józefa Bohdana Zaleskiego, przyjaciela Adama Mickiewicza, pomysł „poematu sielskiego” narodził się już w 1831 podczas pobytu wieszcza w Wielkopolsce. Poeta miał rozpocząć go od opisu dworku szlacheckiego. Z kolei Józef Grabowski, właściciel wsi Łukowo, utrzymywał później, że to w jego miejscowości Mickiewicz powziął postanowienie napisania Pana Tadeusza. Dokładne fakty na ten temat jednak nie są znane. Badacze przypuszczają, że poeta napisał wówczas około sto kilkadziesiąt wersów opisujących Soplicowo (w ostatecznym kształcie fragment ten ma się kończyć na 174 wersie I księgi). Poeta jednak – po napisaniu tego fragmentu – nie rozwijał tekstu przez kilkanaście następnych miesięcy.
+Na początku grudnia 1832 roku (przebywając już w Paryżu) napisał list do przyjaciela, w którym informował o rozpoczętych intensywnych pracach nad poematem. Tekst utworu powstawał bardzo szybko – 12 stycznia 1833 roku Mickiewicz donosił w listach, że napisał już „dwie wielkie pieśni”. Następnie przerwał prace aż do 6 maja, kiedy narodziła się pieśń trzecia. Pod koniec tego samego miesiąca ukończył już część czwartą. Nastąpiła wówczas kolejna kilkumiesięczna przerwa w tworzeniu Pana Tadeusza, spowodowana chorobą poety, opieką nad Stefanem Garczyńskim oraz podróżami. 13 listopada tego samego roku informował w liście, że dokończył pieśń piątą, a od tamtego momentu prace nad epopeją trwały już bez dłuższych przerw: Mickiewicz napisał wówczas w ciągu trzech miesięcy siedem kolejnych ksiąg. Zakończenie twórczej pracy ogłosił 13 lutego 1834 roku. Rękopis został natychmiast przekazany do druku, który ukończono 17 czerwca tego samego roku.
+</textarea></div>
+<div class="adjbox"><p class="label">Adjective list:</p><textarea id="adjset">szybki wolny mały duży krótki długi wklęsły wypukły okrągły prosty łatwy trudny skomplikowany częsty rzadki gęsty ostry tępy gładki szorstki jasny ciemny zły dobry wesoły smutny kręty sympatyczny wesoły smutny kochany piękny nieprzyjacielski</textarea><button id="btn">Process text</button></div>
+<hr/>
+<div class="codebox"><p class="label">Output:</p><code id="output"></code></div>
+</div>
+</body>
+</html>
