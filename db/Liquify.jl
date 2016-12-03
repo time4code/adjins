@@ -52,7 +52,8 @@ module Liquify
 	isnoun(x) = @in(x,subst,depr,ger)
 	isadj(x) = @in(x,adj,pact,ppas)
 		
-	const gendertab = [m1,m2,m3,f,n,n,n,p1,p2,p2]
+	#const gendertab = [m1,m2,m3,f,n,n1,n2,p1,p2,p3]
+	const gendertab = [1,2,3,4,5,5,5,6,7,7]
 	
 	function maketag(tag)
 		g = gendertab[getgender(tag)]-1
@@ -106,8 +107,7 @@ module Liquify
 		return tags
 	end
 	
-	function frompolimorf(morf)
-		gendertab = [m1,m2,m3,f,n,n,n,p1,p2,p2]
+	function frompolimorf(morf)	
 		println("sorting lexems...")
 		data = sort(morf.data,by=x->x.word,alg=MergeSort)
 		tab = Array(Entry,length(morf.map))
@@ -396,6 +396,7 @@ module Liquify
 			baseindexvaules = map(x->x[1],baseindex)
 			rdict2 = Array(UInt128,length(tagdict))
 			for e in tagdict rdict2[e.second+1]=e.first; end
+			println("tag count: ",length(rdict2))
 			write(file,UInt32(length(word)*8),word)
 			write(file,UInt32(length(rdict2)*16),rdict2)
 			write(file,UInt32(length(baseindexvaules)*4),baseindexvaules)
