@@ -1,5 +1,6 @@
 importScripts('lzma.min.js');
 importScripts('nlp.js');
+importScripts('xorshiftplus.js');
 
 var debug = false;
 
@@ -89,6 +90,24 @@ function buildlist(list){
 	return ok;
 }
 
+var rng = new XORShiftPlus();
+
+function getAdjectiveForNoun(list,noun){
+	var n = 0;
+	for(var i=0; i<list.length; i++){
+		if(list[i].isCompatibleWith(noun)){
+			var t = list[i];
+			list[i] = list[n];
+			list[n] = t;
+			n += 1;
+		}
+	}
+	if(n == 0)
+		return null;
+	var r = Math.floor(Math.random()*n);
+	return list[rng.rand(0,n)].toString();
+}
+
 function parse(text,set){
 	text = text || "";
 	var re = /[^\s,.?!'"„”()]+|[,.?!]+/g;
@@ -122,7 +141,7 @@ function parse(text,set){
 					buff += '<span class="adj">'+str+'</span>';
 				}else if(lexem.getPOS() == 'NOUN'){
 					if(lastPOS != 'ADJECTIVE'){
-						var adj = NLP.getAdjectiveForNoun(set,lexem);
+						var adj = getAdjectiveForNoun(set,lexem);
 						if(adj != null){
 							if(str[0].toUpperCase() == str[0] && isFirstWord){
 								buff += '<span class="adj inserted">'+adj[0].toUpperCase()+adj.slice(1)+'</span> ';

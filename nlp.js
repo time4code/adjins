@@ -182,21 +182,6 @@ NLP.getAllFormsOf = function(l){
 	return o;
 }
 
-NLP.getAdjectiveForNoun = function(list,noun){
-	var n = 0;
-	for(var i=0; i<list.length; i++){
-		if(list[i].isCompatibleWith(noun)){
-			var t = list[i];
-			list[i] = list[n];
-			list[n] = t;
-			n += 1;
-		}
-	}
-	if(n == 0)
-		return null;
-	return list[Math.floor(Math.random()*n)].toString();
-}
-
 NLP.Lexem = function(id,neg){
 	this.id = id;
 	var negmask = NLP.tags[4*(NLP.data[this.id*2+0]>>21)+3]>>2;
