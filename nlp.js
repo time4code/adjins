@@ -174,8 +174,11 @@ NLP.getAllFormsOf = function(l){
 	var start = NLP.indexKeys[base];
 	var n = ((base==NLP.indexKeys.length-1)?NLP.indexValues.length:NLP.indexKeys[base+1])-start;
 	var o = [];
-	for(var i=0; i<n; i++)
-		o.push(new NLP.Lexem(NLP.indexValues[start+i],l.neg));
+	for(var i=0; i<n; i++){
+		var lexem = new NLP.Lexem(NLP.indexValues[start+i],l.neg);
+		if(lexem.neg == l.neg)
+			o.push(lexem);
+	}
 	return o;
 }
 
