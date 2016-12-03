@@ -1,4 +1,4 @@
-adjins
+#adjins
 inserts random adjectives into polish texts
 
 see it working here: https://md5crypt.github.io/adjins/
