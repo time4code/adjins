@@ -133,6 +133,7 @@ function parse(text,set){
 			isFirstWord = true;
 		}else{
 			var lexem = NLP.getLexem(str);
+			// console.log({lexem, str});
 			if(lexem != null){
 				if(s > lastEnd)
 					buff += text.slice(lastEnd,s);
@@ -181,6 +182,9 @@ onmessage = function(e){
 					break;
 				}
 			}
+			console.log('lzmaoutput.data.buffer', lzmaoutput.data.buffer);
+			console.log('typeof buffer', typeof lzmaoutput.data.buffer);
+			console.log('buffer constructor', lzmaoutput.data.buffer.constructor.name);
 			NLP.load(lzmaoutput.data.buffer);
 			postMessage(['lzma-complete']);
 			break;

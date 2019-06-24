@@ -1,3 +1,5 @@
+// 'use strict'
+
 var NLP = {};
 
 NLP.byteToChar = [];
@@ -147,12 +149,13 @@ NLP.getLexem = function(s){
 		b = NLP.toByte(s,3,s.length-3);
 		neg = true;
 	}else{
-		b = NLP.toByte(s);
+		b = this.toByte(s);
 	}
 	if(b == null)
 		return null;
 	var lo = 0;
-	var hi = NLP.data.length - 1;
+	// console.log({NLP});
+	var hi = this.data.length - 1;
 	while (lo <= hi) {
 		var mid = lo + ((hi - lo) >> 1);
 		if(NLP.compare(mid,b) > 0){
@@ -213,3 +216,4 @@ NLP.Lexem.prototype.isCompatibleWith = function(lexem){
 		(((NLP.tags[tag1+3] & NLP.tags[tag2+3])&0x03) == (NLP.tags[tag2+3]&0x03))
 	);
 }
+// module.exports = NLP;
