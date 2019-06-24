@@ -1,9 +1,7 @@
 {
   "dependencies": {
-    "blubird": "^0.0.1-security",
     "bluebird": "^3.5.5",
-    "lzma": "^2.3.2",
-    "lzma-native": "^4.0.5"
+    "lzma": "^2.3.2"
   },
   "name": "adjins",
   "description": "inserts random adjectives into polish texts",

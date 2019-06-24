@@ -112,7 +112,7 @@ class NLP {
 	toString(b,offset,length) {
 		offset = offset || 0;
 		length = length || b.length;
-		a = [];
+		let a = [];
 		for (var i=0; i<length; i++)
 			a.push(this.byteToChar[b[offset+i]]);
 		return a.join('');

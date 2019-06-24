@@ -29,6 +29,7 @@ const lzmaDecompress = buffer => {
 		
 		nlp.load(toArrayBuffer(result), () => {
 			console.log(' - [ nlp ] model loaded');
+
 			const words = [
 				'przyjaciela',
 				'ciągu',
@@ -48,6 +49,10 @@ const lzmaDecompress = buffer => {
 				else 
 					console.log(` - [ lexem ] ${words[i]}`, lexem);
 			}
+			console.log(' - ----------------------------- -');
+
+			const lexem = nlp.getLexem(words[0]);
+			console.log(` - [ lexem ] ${words[0]} (adj 2 noun)`, nlp.getAllFormsOf(lexem).map(a => a.toString()));
 		});
 	}, percent => {
 		console.log(` - [ lzma ] loading  ${Math.round(percent * 100 * 10) / 10}%`);
@@ -62,7 +67,10 @@ const toArrayBuffer = function(buf) {
     }
     return ab;
 }
-// if (lexem == null || lexem.getPOS() != 'ADJECTIVE')
-// 	er.push(list[i]);
-// else
-// 	ok.push.apply(ok,NLP.getAllFormsOf(lexem));
+
+
+				// if (lexem == null || lexem.getPOS() != 'ADJECTIVE')
+				// 	// er.push(words[i]);
+				// 	continue;
+				// else
+				// 	nlp.getAllFormsOf(lexem)
